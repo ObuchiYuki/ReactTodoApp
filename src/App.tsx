@@ -1,45 +1,34 @@
+import { v4 as uuid } from 'uuid';
+
 import React, { useState } from 'react';
-import Header from "./Components/Header"
-import { Button } from "./Components/Button"
-import { Input } from "./Components/Input"
-import { Size, Shadow } from "./Const/Const"
 
-import styled from 'styled-components'
+import { Header, AppContaner, AppCard } from "./Components/Containers"
+import { Input, Button } from "./Components/Controls"
+import { TodoCard, TodoList, TodoInputForm } from "./Components/TodoComponents"
 
-const TodoInputForm = styled.form`
-display: flex;
-width: 100%;
-padding: 0;
-gap: 0 20px;
-`
-
-const AppContaner = styled.div`
-margin: 12px;
-display: flex;
-justify-content: center;
-`
-
-const AppCard = styled.div`
-padding: 12px;
-padding-top: 0;
-max-width: 480px;
-background: white;
-border-radius: ${Size.corner};
-box-shadow: ${Shadow.card};
-`
+import { Todo } from "./Data/Data"
 
 export default function App() {
   
-  const [input, setInput] = useState<string>("")
-  const updateInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(event.target.value)
-  }
-  const registerTodo = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    setTodos(todos.concat([input]))
+  const [todoTitle, setTodoTitle] = useState<string>("")
+  const [todos, setTodos] = useState<Todo[]>([])
+
+  const todoChange = (todo: Todo) => {
+    console.log("todoChange")
+    if (todo.isChecked) {
+      const removeIndex = todos.indexOf(todo)
+      if (removeIndex === -1) return
+      todos.splice(removeIndex, 1)
+      setTodos(todos)
+    }
   }
 
-  const [todos, setTodos] = useState<string[]>([])
+  const registerTodo = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    const id = uuid()
+    const todo = new Todo(id, todoTitle, false)
+    setTodos([todo].concat(todos))
+  }
 
   return (
     <AppContaner>
@@ -47,13 +36,13 @@ export default function App() {
         <Header />
 
         <TodoInputForm>
-          <Input placeholder='Add your new todos' type="text" value={input} onChange={updateInput} />
+          <Input placeholder='Add your new todos' type="text" value={todoTitle} onChange={ e => { setTodoTitle(e.target.value) } } />
           <Button onClick={registerTodo}>Submit</Button>
         </TodoInputForm>
 
-        <ul> 
-          { todos.map(todo => <li>{todo}</li>) }
-        </ul>
+        <TodoList> 
+          { todos.map(todo => <TodoCard todo={todo} onChange={ () => { todoChange(todo) } }/>) }
+        </TodoList>
 
       </AppCard>
     </AppContaner>

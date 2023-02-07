@@ -1,6 +1,7 @@
 export const Colors = {
     primary: "#6e27b6",
     controlBackground: "#e9e9e9",
+    controlBorder: "#e9e9e9",
     text: "#141414",
     appBackground: "#FAFAFA"
 }
