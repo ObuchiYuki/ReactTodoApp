@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import checkIcon from "@material-icons/svg/svg/check/outline.svg";
-import { Colors, Size } from "../Data/Const"
+import { Colors, Size } from "../Const"
 
 export const Input = styled.input`
 background: ${Colors.controlBackground};

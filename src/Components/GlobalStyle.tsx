@@ -1,6 +1,6 @@
 import "modern-normalize/modern-normalize.css";
 import { createGlobalStyle } from "styled-components";
-import { Colors } from "./Const"
+import { Colors } from "../Const"
 
 export const GlobalStyle = createGlobalStyle`
   * {

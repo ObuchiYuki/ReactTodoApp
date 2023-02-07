@@ -6,7 +6,7 @@ import { Header, AppContaner, AppCard } from "./Components/Containers"
 import { Input, Button } from "./Components/Controls"
 import { TodoCard, TodoList, TodoInputForm } from "./Components/TodoComponents"
 
-import { Todo } from "./Data/Data"
+import { Todo } from "./Model/Todo"
 
 export default function App() {
   

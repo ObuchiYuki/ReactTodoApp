@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { CheckBox } from "./Controls"
-import { Colors, } from "../Data/Const"
-import { Todo } from "../Data/Data"
+import { Colors, } from "../Const"
+import { Todo } from "../Model/Todo"
 import { useState } from 'react'
 
 export const TodoCardContainer = styled.li`

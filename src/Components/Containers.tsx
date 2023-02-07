@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react';
 import styled from 'styled-components'
 
-import { Size, Shadow } from "../Data/Const"
+import { Size, Shadow } from "../Const"
 
 const HeaderContainer = styled.div`
   background: white;
