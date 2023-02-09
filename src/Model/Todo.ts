@@ -1,6 +1,6 @@
-import { action, computed, makeObservable, observable, toJS } from "mobx"
+import { action, computed, makeObservable, observable } from "mobx"
 import { v4 as uuid } from "uuid"
-import { isArrayOf, notNullable } from "../util/isArrayOf"
+import { notNullable } from "../util/isArrayOf"
 
 export class Todo {
     constructor(

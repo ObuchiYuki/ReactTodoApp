@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 import { CheckBox } from "./Controls"
 import { Colors, } from "../Const"
 import { Todo, TodoStore } from "../Model/Todo"
