@@ -14,7 +14,7 @@ const HeaderContainer = styled.div`
 
 const HeaderTitle = styled.h1`
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 700;
 `
 
 export function Header() {
@@ -50,4 +50,9 @@ export const AppCard = styled.div`
     display: flex;
     flex-direction: column;
     gap: 12px 0;
+`
+
+export const Footnote = styled.p`
+color: #b1b1b1;
+font-size: 12px;
 `

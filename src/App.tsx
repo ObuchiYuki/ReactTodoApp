@@ -1,33 +1,36 @@
-import { v4 as uuid } from 'uuid';
+import { autorun, reaction, toJS } from 'mobx';
+import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
 
-import React, { useState } from 'react';
-
-import { Header, AppContaner, AppCard } from "./Components/Containers"
+import { Header, AppContaner, AppCard, Footnote } from "./Components/Containers"
 import { Input, Button } from "./Components/Controls"
-import { TodoCard, TodoList, TodoInputForm } from "./Components/TodoComponents"
+import { TodoInputForm, TodoList } from "./Components/TodoComponents"
 
-import { Todo } from "./Model/Todo"
+import { TodoStore } from "./Model/Todo"
 
 export default function App() {
   
   const [todoTitle, setTodoTitle] = useState<string>("")
-  const [todos, setTodos] = useState<Todo[]>([])
+  const [store] = useState<TodoStore>(() => {
+    return new TodoStore(localStorage.getItem("todos"))
+  })
 
-  const todoChange = (todo: Todo) => {
-    console.log("todoChange")
-    if (todo.isChecked) {
-      const removeIndex = todos.indexOf(todo)
-      if (removeIndex === -1) return
-      todos.splice(removeIndex, 1)
-      setTodos(todos)
-    }
-  }
+  useEffect(() => { 
+    autorun(() => {
+      localStorage.setItem("todos", store.toJSON)
+    }, { delay: 10 }) 
+  }, [store]) 
 
-  const registerTodo = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault()
-    const id = uuid()
-    const todo = new Todo(id, todoTitle, false)
-    setTodos([todo].concat(todos))
+  useEffect(() => {
+    autorun(() => {
+      _.debounce(() => { store.removeCompleted()  }, 1500)()
+    })
+  }, [store])
+
+  const registerNewTodo = (e: React.MouseEvent) => {
+    e.preventDefault()
+    store.addTodo(todoTitle)
+    setTodoTitle("")
   }
 
   return (
@@ -35,14 +38,14 @@ export default function App() {
       <AppCard>
         <Header />
 
-        <TodoInputForm>
+        <TodoInputForm onSubmit={e => { e.preventDefault() }}>
           <Input placeholder='Add your new todos' type="text" value={todoTitle} onChange={ e => { setTodoTitle(e.target.value) } } />
-          <Button onClick={registerTodo}>Submit</Button>
+          <Button onClick={registerNewTodo} disabled={todoTitle.length === 0}>+</Button>
         </TodoInputForm>
+        
+        <TodoList store={store}/>
 
-        <TodoList> 
-          { todos.map(todo => <TodoCard todo={todo} onChange={ () => { todoChange(todo) } }/>) }
-        </TodoList>
+        <Footnote> {store.remeiningTodos.length} todos remaining.</Footnote>
 
       </AppCard>
     </AppContaner>
