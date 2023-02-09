@@ -59,7 +59,7 @@ export class TodoStore {
     }
 
     @action removeCompleted() {
-        if (this.completedTodos.length >= 0) {
+        if (this.completedTodos.length > 0) {
             this._todos = this.remeiningTodos
         }
     }

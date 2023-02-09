@@ -1,4 +1,4 @@
-import { autorun, reaction, toJS } from 'mobx';
+import { autorun, reaction, toJS, when } from 'mobx';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 
@@ -15,17 +15,20 @@ export default function App() {
     return new TodoStore(localStorage.getItem("todos"))
   })
 
+  const [checkCompleted] = useState<_.DebouncedFunc<() => void>>(() => _.debounce(() => { 
+      store.removeCompleted() 
+    }, 2000))
+
   useEffect(() => { 
-    autorun(() => {
-      localStorage.setItem("todos", store.toJSON)
-    }, { delay: 10 }) 
-  }, [store]) 
+    autorun(() => { localStorage.setItem("todos", store.toJSON) }, { delay: 30 }) 
+  }, [store])
 
   useEffect(() => {
-    autorun(() => {
-      _.debounce(() => { store.removeCompleted()  }, 1500)()
+    checkCompleted()
+    reaction(() => store.remeiningTodos.length, () => {
+      checkCompleted()
     })
-  }, [store])
+  }, [store, checkCompleted])
 
   const registerNewTodo = (e: React.MouseEvent) => {
     e.preventDefault()
