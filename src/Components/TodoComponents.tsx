@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { Footnote } from './Containers'
 import { CheckBox } from "./Controls"
 import { Colors, } from "../Const"
 import { Todo, TodoStore } from "../Model/Todo"
@@ -52,3 +53,6 @@ export const TodoInputForm = styled.form`
     padding: 0;
     gap: 0 20px;
 `
+export const TodoFootnote = observer(({ store }: { store: TodoStore }) => 
+    <Footnote> {store.remeiningTodos.length} todos remaining.</Footnote>
+)
