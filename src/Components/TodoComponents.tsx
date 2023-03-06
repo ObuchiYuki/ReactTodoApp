@@ -29,8 +29,8 @@ export const TodoCardTitleInput = styled.input.attrs({ type: "text" })`
 
 export const TodoCard = observer(({ todo }: { todo: Todo }) => {
     return <TodoCardContainer initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-        <CheckBox value={todo.isCompleted} onChange={e => { todo.toggleCompleted() }}/>
-        <TodoCardTitleInput value={todo.title} onChange={e => { todo.renameTitle(e.target.value) }} />
+        <CheckBox value={todo.completed} onChange={e => { todo.toggleCompleted() }}/>
+        <TodoCardTitleInput value={todo.title} onChange={e => { todo.title = e.target.value }} />
     </TodoCardContainer>
 })
 
@@ -54,5 +54,5 @@ export const TodoInputForm = styled.form`
     gap: 0 20px;
 `
 export const TodoFootnote = observer(({ store }: { store: TodoStore }) => 
-    <Footnote> {store.remeiningTodos.length} todos remaining.</Footnote>
+    <Footnote> 0 todos remaining.</Footnote>
 )

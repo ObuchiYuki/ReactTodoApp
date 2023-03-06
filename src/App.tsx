@@ -1,29 +1,48 @@
-import { autorun, reaction } from 'mobx';
 import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
+import { autorun, reaction } from 'mobx';
+
+import { WebSocketProvider } from "y-websocket-provider-typescript/dist/WebSocketProvider"
+import { Bindable } from "y-orm-typescript"
+
 import { Header, AppContaner, AppCard, Footnote } from "./Components/Containers"
 import { Input, Button } from "./Components/Controls"
 import { TodoInputForm, TodoList, TodoFootnote } from "./Components/TodoComponents"
 import { TodoStore } from "./Model/Todo"
 
+import * as Y from "yjs"
+
 export default function App() {
   
+  const [store, setStore] = useState<TodoStore|undefined>(undefined)
   const [todoTitle, setTodoTitle] = useState<string>("")
-  const [store] = useState(() => new TodoStore(localStorage.getItem("todos")))
-
-  useEffect(() => autorun(() => { 
-    localStorage.setItem("todos", store.toJSON)
-  }, { delay: 30 }) , [store])
 
   useEffect(() => {
+    const ydoc = new Y.Doc()
+    const provider = new WebSocketProvider({
+      serverUrl: "ws://localhost:1234", roomname: "sample.document", doc: ydoc
+    })
+
+    provider.on("synced", () => {
+      const store = Bindable.getRoot(ydoc).takeBindable(TodoStore, "store")
+      setStore(store)
+    })
+  }, [])
+
+  useEffect(() => { 
+    if (store == null) return
     const checkCompleted = _.debounce(() => store.removeCompleted(), 2000)
-    checkCompleted()
-    reaction(() => store.remeiningTodos.length, () => checkCompleted())
+
+    autorun(() => {
+      if (store.completedTodos.length > 0) {
+        checkCompleted()
+      }
+    })
   }, [store])
 
   const registerNewTodo = (e: React.MouseEvent) => {
     e.preventDefault()
-    store.addTodo(todoTitle)
+    store?.addTodo(todoTitle)
     setTodoTitle("")
   }
 
@@ -32,13 +51,19 @@ export default function App() {
       <AppCard>
         <Header />
 
-        <TodoInputForm onSubmit={e => { e.preventDefault() }}>
-          <Input placeholder='Add your new todos' type="text" value={todoTitle} onChange={ e => { setTodoTitle(e.target.value) } } />
-          <Button onClick={registerNewTodo} disabled={todoTitle.length === 0}>+</Button>
-        </TodoInputForm>
+        {
+          store ? 
+          (
+            <TodoInputForm onSubmit={e => { e.preventDefault() }}>
+              <Input placeholder='Add your new todos' type="text" value={todoTitle} onChange={ e => { setTodoTitle(e.target.value) } } />
+              <Button onClick={registerNewTodo} disabled={todoTitle.length === 0}>+</Button>
+            </TodoInputForm>
+          ) : (
+            "Waiting to connect..."
+          )
+        }
         
-        <TodoList store={store}/>
-        <TodoFootnote store={store}/>
+        { store && <TodoList store={store}/> }
       </AppCard>
     </AppContaner>
   );

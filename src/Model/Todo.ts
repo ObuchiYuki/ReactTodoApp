@@ -1,77 +1,40 @@
-import { action, computed, makeObservable, observable } from "mobx"
 import { v4 as uuid } from "uuid"
-import { notNullable } from "../util/isArrayOf"
+import { BindingArray, BindingMap, Bindable } from "y-orm-typescript"
 
 export class Todo {
-    constructor(
-        public readonly id: string,
-        public title: string,
-        public isCompleted: boolean = false
-    ) {
-        makeObservable(this, {
-            title: observable,
-            isCompleted: observable,
-            toggleCompleted: action,
-            renameTitle: action
-        })
-    }
+    get id(): string { return this.map.getConstString("id") }
+    set id(value) { this.map.setConst("id", value) }
 
-    toggleCompleted() {
-        this.isCompleted = !this.isCompleted
-    }
+    get title(): string { return this.map.getString("title") ?? "" }
+    set title(value) { this.map.set("title", value) }
 
-    renameTitle(title: string) {
-        this.title = title
-    }
+    get completed(): boolean { return this.map.getBoolean("completed") ?? false }
+    set completed(value) { this.map.set("completed", value) }
 
-    static fromJson(json: any): Todo | null {
-        const { id, title, isCompleted } = json
-        if (typeof id === "string" && typeof title === "string" && typeof isCompleted === "boolean") {
-            return new Todo(id, title, isCompleted)
-        }
-        return null
-    }
+    toggleCompleted() { this.completed = !this.completed }
+
+    constructor(public map: BindingMap) {}
 }
+Bindable.mark(Todo, { id: "const" })
 
 export class TodoStore {
-    @observable private _todos: Todo[] = []
-    get todos() { return this._todos.slice() }
-
-    constructor(json: string | null) {
-        if (json != null) {
-            const restoredTodos = JSON.parse(json)
-            if (Array.isArray(restoredTodos)) {
-                this._todos = restoredTodos.map(Todo.fromJson).filter(notNullable)
-            }
-        }
-
-        makeObservable(this)
+    readonly todos: BindingArray<Todo>
+    
+    constructor(public map: BindingMap) {
+        this.todos = map.takeBindableArray(Todo, "todos")
     }
 
-    @action addTodo(title: string) {
+    addTodo(title: string) {
         const id = uuid()
-        const todo = new Todo(id, title)
-        this._todos.splice(0, 0, todo)
+        const todo = Bindable.make(Todo, { id: id, title: title })
+        this.todos.unshift([todo])
     }
 
-    @action removeTodo(todo: Todo) {
-        this._todos.slice(this._todos.indexOf(todo), 1)
+    removeCompleted() {
+        console.log("remove completed")
+        this.todos.removeWhere(todo => todo.completed)
     }
 
-    @action removeCompleted() {
-        if (this.completedTodos.length > 0) {
-            this._todos = this.remeiningTodos
-        }
-    }
-
-    @computed get toJSON() {
-        return JSON.stringify(this._todos)
-    }
-
-    @computed get remeiningTodos() {
-        return this._todos.filter(e => !e.isCompleted)
-    }
-    @computed get completedTodos() {
-        return this._todos.filter(e => e.isCompleted)
-    }
+    get remeiningTodos() { return this.todos.filter(todo => !todo.completed) }
+    get completedTodos() { return this.todos.filter(todo => todo.completed) }
 }
