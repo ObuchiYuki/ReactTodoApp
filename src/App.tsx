@@ -20,7 +20,7 @@ export default function App() {
   useEffect(() => {
     const ydoc = new Y.Doc()
     const provider = new WebSocketProvider({
-      serverUrl: "ws://localhost:1234", roomname: "sample.document", doc: ydoc
+      serverUrl: "ws://y-websocket-server.eastasia.azurecontainer.io", roomname: "sample.document", doc: ydoc
     })
 
     provider.on("synced", () => {
