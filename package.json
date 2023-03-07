@@ -19,14 +19,14 @@
     "yjs": "^13.5.48"
   },
   "devDependencies": {
-    "react-scripts": "^5.0.1",
     "@types/lodash": "^4.14.191",
     "@types/node": "^16.18.14",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/styled-components": "^5.1.26",
     "@types/uuid": "^9.0.1",
-    "@types/ws": "^8.5.4"
+    "@types/ws": "^8.5.4",
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
